@@ -1,4 +1,4 @@
-#this is a Rhistory file, is not a clean script
+#this is a Rhistory file, is not a clean script, this is to produce heatmaps per chromosome with bars
 getwd()
 library(ggplot2)
 library(data.table)

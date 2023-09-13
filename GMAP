@@ -1,0 +1,42 @@
+####create DB
+
+#!/bin/bash
+#SBATCH --account=def-rieseber
+#SBATCH --time=1-0
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=20G
+
+module load StdEnv/2020 gmap-gsnap/2020-11-14
+
+#mkdir DATABASES
+
+#for i in $(ls *fasta)
+#do
+
+#name=$(echo $i | cut -d "." -f 1)
+
+
+gmap_build -d VIGH1 -D DATABASES VIGUIERA_H1_hap1.reviewed.chr_assembled.fasta
+
+gmap_build -d VIGH2 -D DATABASES VIGUIERA_H2_hap2.reviewed.chr_assembled.fasta
+
+
+####run GMAP
+#!/bin/bash
+#SBATCH --time=2-8
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=20G
+#SBATCH --array=1-10
+
+export PATH=/home/egonza02/scratch/Restore20230217/SOFTWARE/GMAP/gmap-2021-12-17/bin/:$PATH
+export TMPDIR=/home/egonza02/scratch/ALIGNMENTS/GMAP/ALIGNMENTS
+
+i=$(ls /home/egonza02/scratch/ALIGNMENTS/GMAP/DATABASES/  | head -n $SLURM_ARRAY_TASK_ID | tail -n 1)
+
+
+gmap -d $i -D /home/egonza02/scratch/ALIGNMENTS/GMAP/DATABASES/ -t 12 -O -n 1 -f 2 --min-trimmed-coverage=0.75 --min-identity=0.75 New_run_76k_pangenome.fasta > "$i""_mincov75_minID75.PANNEW
+76k.gmap.gff3" 2>"$i""_mincov75_minID75.PANNEW76k.gmap.log"
+
+gmap -d $i -D /home/egonza02/scratch/ALIGNMENTS/GMAP/DATABASES/ -t 12 -O -n 1 -f 2 --min-trimmed-coverage=0.90 --min-identity=0.90 New_run_76k_pangenome.fasta > "$i""_mincov90_minID90.PANNEW
+76k.gmap.gff3" 2>"$i""_mincov90_minID90.PANNEW76k.gmap.log"
+

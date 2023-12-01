@@ -24,7 +24,7 @@ paste  -d ' '  name_sequence.txt legths.txt  | sed 's/>//g' >  name_sequence_len
 #obtain the percentage of ID,  not used here
 #samtools calmd context-sequences-AXIOM-markers_clean_vs_HanXRQv2_sorted.bam HanXRQv2.fasta | samtools view -bq 50 - | htsbox  samview -p - | awk '{print ($10/$11)*100}' > percentage_id.txt
 
-#convert the alignment to paf file and select markers whose alignments have a MQ > 50, and the same length as the context sequence. Also, if they have only one snp or less between the context sequence and the reference genome
+#convert the alignment to paf file and select markers whose alignments have a MQ > 50, and the same length as the context sequence. Also, keep only alignments that have one snp or less between the context sequence and the reference genome
  samtools calmd context-sequences-AXIOM-markers_clean_vs_HanXRQv2_sorted.bam HanXRQv2.fasta | samtools view -bq 50 - | htsbox  samview -p - | awk '$2 == $11 && ($11 - $10) < 2  {print $1, $5
 , $6, $8, $9}' > Posiciones_de_los_tags.txt
 

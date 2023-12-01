@@ -18,20 +18,20 @@ txt
 #context sequence and name on the same row
 sed '/--/d' context-sequences-AXIOM-markers.fa | awk '/^>/{printf "%s ",$0;next}{print}' > name_sequence.txt
 
-#paste legth and sequence name
+#paste length and sequence name
 paste  -d ' '  name_sequence.txt legths.txt  | sed 's/>//g' >  name_sequence_lenght.txt
 
-#obtain percetage of ID,  not used here
+#obtain the percentage of ID,  not used here
 #samtools calmd context-sequences-AXIOM-markers_clean_vs_HanXRQv2_sorted.bam HanXRQv2.fasta | samtools view -bq 50 - | htsbox  samview -p - | awk '{print ($10/$11)*100}' > percentage_id.txt
 
-#convert alignemnt to paf file and select markers whose alignments are of the same length as the context sequence and they have only one snp or less between teh context sequence and the reference genome
+#convert the alignment to paf file and select markers whose alignments are of the same length as the context sequence and they have only one snp or less between the context sequence and the reference genome
  samtools calmd context-sequences-AXIOM-markers_clean_vs_HanXRQv2_sorted.bam HanXRQv2.fasta | samtools view -bq 50 - | htsbox  samview -p - | awk '$2 == $11 && ($11 - $10) < 2  {print $1, $5
 , $6, $8, $9}' > Posiciones_de_los_tags.txt
 
 #paste 
 awk 'NR==FNR{a[$1]=$0; next} {print $0, a[$1]}' name_sequence_lenght.txt Posiciones_de_los_tags.txt > Posiciones_de_los_tags_name_sequence_lenght.txt
 
-#find the snp possition inside the context sequence
+#find the snp position inside the context sequence
  awk '{
   if ($2 == "+") {
     split($7, array, /\[/)
@@ -49,12 +49,12 @@ awk 'NR==FNR{a[$1]=$0; next} {print $0, a[$1]}' name_sequence_lenght.txt Posicio
 
  awk '{print $0, $4 + $9 +1}' Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP.txt  > Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_pos.txt
 
-#filter original genetic map to get the marker name, linkage group and genetic distance
+#filter the original genetic map to get the marker name, linkage group, and genetic distance
  awk -v OFS=" " -F "," '{print $4, $1, $2}' MAP_tabulee_with_raw_data_AXIOM_Infinium_buildfw.csv  | sed '1,2d' > Markers_geneticdist.txt
 
 #merge
 awk 'NR==FNR{a[$1]=$0; next} {print $0, a[$1]}' Markers_geneticdist.txt  Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_pos.txt  | awk '{print "\"" "XRQ" "\"", "\"" $3 "\"", "\""
 $1 "\"" , $10 ,$13}' > Table_For_Marey.txt
 
-#add headear
+#add header
 cat Names.txt Table_For_Marey.txt > Table_For_Marey_names.txt

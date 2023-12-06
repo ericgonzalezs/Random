@@ -47,10 +47,12 @@ Pos_500kb_2_der$RR[Pos_500kb_2_der$RR < 0] <- 0
 
 jpeg(paste(chr , "RR.jpg", sep= "_"))
 plot(Pos_500kb_2_der$phys, Pos_500kb_2_der$RR)
+lines(smooth.spline(Pos_500kb_2_der$phys, Pos_500kb_2_der$RR, spar =0.05), col="blue")
 dev.off()
 
 jpeg(paste(chr , "Marey.jpg", sep= "_"))
 plot(Pos2_R_F1_R2_F2$phys, Pos2_R_F1_R2_F2$gen)
+lines(smooth.spline(Pos2_R_F1_R2_F2$phys, Pos2_R_F1_R2_F2$gen, spar =0.05), col="red")    
 dev.off()
 
 write.table(Pos_500kb_2_der, paste(chr ,"500Kb_RR_filtered.txt", sep = "_"), quote = F,  row.names = F)

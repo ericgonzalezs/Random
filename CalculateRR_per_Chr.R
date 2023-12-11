@@ -47,7 +47,7 @@ Pos_500kb_2_der$RR[Pos_500kb_2_der$RR < 0] <- 0
 
 jpeg(paste(chr , "RR.jpg", sep= "_"))
 plot(Pos_500kb_2_der$phys, Pos_500kb_2_der$RR)
-lines(smooth.spline(Pos_500kb_2_der$phys, Pos_500kb_2_der$RR, spar =0.05), col="blue")
+lines(smooth.spline(Pos_500kb_2_der$phys, Pos_500kb_2_der$RR, spar =0.3), col="blue")
 dev.off()
 
 jpeg(paste(chr , "Marey.jpg", sep= "_"))

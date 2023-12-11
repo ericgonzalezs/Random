@@ -11,7 +11,7 @@ for(chr in c("HanXRQChr01", "HanXRQChr02", "HanXRQChr08", "HanXRQChr09")) {
 Pos2 <- subset(Pos, Pos$map==chr)
 
 #a first filter to eliminate crazy outliers using the residuals
-spline <- smooth.spline(x = Pos2$phys, y = Pos2$gen, spar = 0.05)
+spline <- smooth.spline(x = Pos2$phys, y = Pos2$gen, spar = 0.3)
 Pos2_R <-  cbind(Pos2, R=residuals(spline))
 Pos2_R_F1 <- subset(Pos2_R, Pos2_R$R > -1 & Pos2_R$R < 1)
 
@@ -25,12 +25,12 @@ while (any(diff(Pos2_R_F1$gen) < 0)) {
 
 #a second filter to eliminate outliers after I fit a second cubic spline
 
-spline2 <- smooth.spline(Pos2_R_F1$phys, Pos2_R_F1$gen, spar = 0.05)
+spline2 <- smooth.spline(Pos2_R_F1$phys, Pos2_R_F1$gen, spar = 0.3)
 Pos2_R_F1_R2 <- cbind(Pos2_R_F1, R2=residuals(spline2))
 Pos2_R_F1_R2_F2 <- subset(Pos2_R_F1_R2, Pos2_R_F1_R2$R2 > -0.1 & Pos2_R_F1_R2$R2 < 0.1)
 
 #creating the cubic spline I'll use to report RR
-spline3 <- smooth.spline(Pos2_R_F1_R2_F2$phys, Pos2_R_F1_R2_F2$gen, spar = 0.05)
+spline3 <- smooth.spline(Pos2_R_F1_R2_F2$phys, Pos2_R_F1_R2_F2$gen, spar = 0.3)
 
 #file with pos every 500kb
 Pos_500kb_2 <- subset(Pos_500kb, Pos_500kb$map==chr)
@@ -52,7 +52,7 @@ dev.off()
 
 jpeg(paste(chr , "Marey.jpg", sep= "_"))
 plot(Pos2_R_F1_R2_F2$phys, Pos2_R_F1_R2_F2$gen)
-lines(smooth.spline(Pos2_R_F1_R2_F2$phys, Pos2_R_F1_R2_F2$gen, spar =0.05), col="red")    
+lines(smooth.spline(Pos2_R_F1_R2_F2$phys, Pos2_R_F1_R2_F2$gen, spar =0.3), col="red")    
 dev.off()
 
 write.table(Pos_500kb_2_der, paste(chr ,"500Kb_RR_filtered.txt", sep = "_"), quote = F,  row.names = F)

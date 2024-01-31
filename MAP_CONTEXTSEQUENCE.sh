@@ -1,3 +1,8 @@
+#create fasta file
+#example with another csv file
+
+awk -F',' -v OFS="\n" '{print ">"$1, $2}' list_mk_infinium_inedi_context_sequences.csv > list_mk_infinium_inedi_context_sequences.fa
+
 #############mapping
 bwa index HanXRQv2.fasta
 

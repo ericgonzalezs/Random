@@ -61,9 +61,56 @@ $1 "\"" , $10 ,$13}' > Table_For_Marey.txt
 #add header
 cat Names.txt Table_For_Marey.txt > Table_For_Marey_names.txt
 
-#To include the HA markers
+
+####################################################
+######To include the HA markers
+####################################################
+
 #create fasta file
 
 #example with another csv file
 
 awk -F',' -v OFS="\n" '{print ">"$1, $2}' list_mk_infinium_inedi_context_sequences.csv > list_mk_infinium_inedi_context_sequences.fa
+sed '/--/d' list_mk_infinium_inedi_context_sequences.fa |  sed 's/\[A\/.\]/N/g' | sed 's/\[T\/.\]/N/g' | sed 's/\[C\/.\]/N/g' | sed 's/\[G\/.\]/N/g' |  awk '/^>/ {if (seq) print seq; print; seq=""; next} {gsub(/[^AGCT]/, "N"); seq = seq $0} END {print seq}'  > list_mk_infinium_inedi_context_sequences_clean.fa
+
+bwa mem HanXRQv2.fasta  list_mk_infinium_inedi_context_sequences_clean.fa > list_mk_infinium_inedi_context_sequences_clean.sam
+
+samtools view -b list_mk_infinium_inedi_context_sequences_clean.sam > list_mk_infinium_inedi_context_sequences_clean.bam
+
+samtools sort list_mk_infinium_inedi_context_sequences_clean.bam -o list_mk_infinium_inedi_context_sequences_clean_sorted.bam
+
+# obtain leght of the context sequence
+grep -v ">" list_mk_infinium_inedi_context_sequences_clean.fa | awk '{print length($0)}' > legthsHA.txt
+
+awk '/^>/{printf "%s ",$0;next}{print}' list_mk_infinium_inedi_context_sequences.fa  > name_sequenceHA.txt
+
+paste  -d ' '  name_sequenceHA.txt legthsHA.txt  | sed 's/>//g' >  name_sequence_lenghtHA.txt
+
+
+#awk '$2 == $11  esto quiere decir que Query sequence length == Alignment block length y  ($11 - $10) < 2  quire decir que solo haya un missmatch o menos, pero como tenemos varias letras raras, debemos de tener más de un missmatch, asi que esto lo cambie a 5
+  samtools calmd list_mk_infinium_inedi_context_sequences_clean_sorted.bam  HanXRQv2.fasta | samtools view -bq 50 - | htsbox  samview -p - | awk '$2 == $11 && ($11 - $10) < 7  {print $1, $5, $6, $8, $9}' > Posiciones_de_los_tags_HA.txt
+
+
+
+  awk 'NR==FNR{a[$1]=$0; next} {print $0, a[$1]}'  name_sequence_lenghtHA.txt  Posiciones_de_los_tags_HA.txt > Posiciones_de_los_tags_name_sequence_lenght_HA.txt
+
+  awk '{
+  if ($2 == "+") {
+    split($7, array, /\[/)
+    letters_count = length(array[1])
+  } else if ($2 == "-") {
+    split($7, array, /\]/)
+    letters_count = length(array[2])
+  }
+
+  print $0, letters_count
+}' Posiciones_de_los_tags_name_sequence_lenght_HA.txt > Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_HA.txt
+
+
+ awk '{print $0, $4 + $9 +1}' Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_HA.txt > Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_pos_HA.txt
+
+
+ cat Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_pos.txt Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_pos_HA.txt > Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_pos_HA_AX.txt
+
+  awk 'NR==FNR{a[$1]=$0; next} {print $0, a[$1]}' Markers_geneticdist.txt Posiciones_de_los_tags_name_sequence_lenght_lenght_to_SNP_pos_HA_AX.txt | awk '{print "\"" "XRQ" "\"", "\"" $3 "\"", "\"" $1 "\"" , $10 ,$13}' >  Table_For_Marey_HA_AX.tx
+

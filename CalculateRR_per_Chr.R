@@ -13,7 +13,7 @@ Pos2 <- subset(Pos, Pos$map==chr)
 #a first filter to eliminate crazy outliers using the residuals
 spline <- smooth.spline(x = Pos2$phys, y = Pos2$gen, spar = 0.3)
 Pos2_R <-  cbind(Pos2, R=residuals(spline))
-Pos2_R_F1 <- subset(Pos2_R, Pos2_R$R > -1 & Pos2_R$R < 1)
+Pos2_R_F1 <- subset(Pos2_R, Pos2_R$R > -0.7 & Pos2_R$R < 0.7)
 
 #then, eliminate values that break the monotonic increase
 

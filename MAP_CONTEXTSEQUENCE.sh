@@ -1,7 +1,4 @@
-#create fasta file
-#example with another csv file
 
-awk -F',' -v OFS="\n" '{print ">"$1, $2}' list_mk_infinium_inedi_context_sequences.csv > list_mk_infinium_inedi_context_sequences.fa
 
 #############mapping
 bwa index HanXRQv2.fasta
@@ -63,3 +60,10 @@ $1 "\"" , $10 ,$13}' > Table_For_Marey.txt
 
 #add header
 cat Names.txt Table_For_Marey.txt > Table_For_Marey_names.txt
+
+#To include the HA markers
+#create fasta file
+
+#example with another csv file
+
+awk -F',' -v OFS="\n" '{print ">"$1, $2}' list_mk_infinium_inedi_context_sequences.csv > list_mk_infinium_inedi_context_sequences.fa

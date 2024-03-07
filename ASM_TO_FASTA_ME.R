@@ -148,18 +148,15 @@ mid_data2 %>% group_by(CHR) %>% filter(size == max(size)) %>% ungroup() %>% muta
 
 chromosome_df <- mid_data2_2 %>% select(CHR, Chromosome) %>% distinct()
 
-mid_data2  %>% left_join(chromosome_df, by = "CHR") %>% mutate(orientation = ifelse(order_sign >= 0, "F", "R"))  %>%  select(Chromosome, contig_order_in_chr, fragment_ID, orientation) -> mid
-_data2
+mid_data2  %>% left_join(chromosome_df, by = "CHR") %>% mutate(orientation = ifelse(order_sign >= 0, "F", "R"))  %>%  select(Chromosome, contig_order_in_chr, fragment_ID, orientation) -> mid_data2
 
 
 #merge tables
 bind_rows(mid_data, mid_data2, debris) -> CONTIG_ORDER_CHR
 
- CONTIG_ORDER_CHR %>% mutate(numeric_part = as.integer(sub(".*_scaffold_(\\d+)", "\\1", Chromosome)) ) %>% mutate(HAP = str_extract(Chromosome, "H[12]")) %>%  arrange(HAP,  numeric_part, con
-tig_order_in_chr,  numeric_part, contig_order_in_chr ) %>% select(Chromosome, contig_order_in_chr, fragment_ID, orientation, numeric_part, HAP) -> CONTIG_ORDER_CHR
+ CONTIG_ORDER_CHR %>% mutate(numeric_part = as.integer(sub(".*_scaffold_(\\d+)", "\\1", Chromosome)) ) %>% mutate(HAP = str_extract(Chromosome, "H[12]")) %>%  arrange(HAP,  numeric_part, contig_order_in_chr,  numeric_part, contig_order_in_chr ) %>% select(Chromosome, contig_order_in_chr, fragment_ID, orientation, numeric_part, HAP) -> CONTIG_ORDER_CHR
 
-CONTIG_ORDER_CHR %>% group_by(HAP)  %>% arrange(HAP, numeric_part) %>%  mutate(NEW_CHR = as.integer(factor(numeric_part))) %>%  ungroup() %>% mutate(Chromosome = paste(HAP,"HiC_scaffold",NEW
-_CHR,sep = "_")) %>% select(Chromosome, contig_order_in_chr, fragment_ID, orientation) ->  CONTIG_ORDER_CHR
+CONTIG_ORDER_CHR %>% group_by(HAP)  %>% arrange(HAP, numeric_part) %>%  mutate(NEW_CHR = as.integer(factor(numeric_part))) %>%  ungroup() %>% mutate(Chromosome = paste(HAP,"HiC_scaffold",NEW_CHR,sep = "_")) %>% select(Chromosome, contig_order_in_chr, fragment_ID, orientation) ->  CONTIG_ORDER_CHR
 
 #estoy ya se ve bien, solo comparar con lo que tenía antes y ver si es igual en cuanto a numero de rows y así
 
@@ -215,10 +212,9 @@ CORRECTED_CONTIGS %>%
 NS <- strrep("N", 500)
 
 FINAL_FASTA <- NULL
-for (CHR in 1:length(CHROMOSOME)) { CORRECTED_CONTIGS %>% filter(Chromosome == as.character(CHROMOSOME[CHR])) %>%  arrange(contig_order_in_chr) %>% pull(sq) %>% paste(  . ,sq(c(rep(NS,  leng
-th(.) - 1), ""), "dna_ext"))  %>%  collapse() %>% enframe() %>% mutate(name = as.character(CHROMOSOME[CHR]))  %>% select(sq = value,  name) %>% bind_rows(., FINAL_FASTA) -> FINAL_FASTA }
+for (CHR in 1:length(CHROMOSOME)) { CORRECTED_CONTIGS %>% filter(Chromosome == as.character(CHROMOSOME[CHR])) %>%  arrange(contig_order_in_chr) %>% pull(sq) %>% paste(  . ,sq(c(rep(NS,  length(.) - 1), ""), "dna_ext"))  %>%  collapse() %>% enframe() %>% mutate(name = as.character(CHROMOSOME[CHR]))  %>% select(sq = value,  name) %>% bind_rows(., FINAL_FASTA) -> FINAL_FASTA }
 
-#añadí esto último para ordenar los contigs
+#ordenaring contigs
 FINAL_FASTA %>%
   mutate(length = get_sq_lengths(sq)) %>%
   arrange(desc(length)) %>%

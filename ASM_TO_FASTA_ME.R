@@ -152,7 +152,14 @@ mid_data2  %>% left_join(chromosome_df, by = "CHR") %>% mutate(orientation = ife
 
 
 #merge tables
+#bind_rows(mid_data, mid_data2, debris) -> CONTIG_ORDER_CHR
+if( nrow(mid_data2) > 0) {
 bind_rows(mid_data, mid_data2, debris) -> CONTIG_ORDER_CHR
+} else {
+mid_data -> CONTIG_ORDER_CHR
+}
+
+
 
  CONTIG_ORDER_CHR %>% mutate(numeric_part = as.integer(sub(".*_scaffold_(\\d+)", "\\1", Chromosome)) ) %>% mutate(HAP = str_extract(Chromosome, "H[12]")) %>%  arrange(HAP,  numeric_part, contig_order_in_chr,  numeric_part, contig_order_in_chr ) %>% select(Chromosome, contig_order_in_chr, fragment_ID, orientation, numeric_part, HAP) -> CONTIG_ORDER_CHR
 
